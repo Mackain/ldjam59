@@ -286,12 +286,6 @@ class GameScene extends Phaser.Scene {
         // Switch to destination-out to cut transparent holes
         ctx.globalCompositeOperation = 'destination-out';
 
-        // Always reveal area around the bird
-        ctx.fillStyle = 'rgba(255, 255, 255, 1)';
-        ctx.beginPath();
-        ctx.arc(this.bird.x, this.bird.y, SONAR_BIRD_RADIUS, 0, Math.PI * 2);
-        ctx.fill();
-
         // Expand and draw sonar wave rings
         for (let i = this.sonarWaves.length - 1; i >= 0; i--) {
             const wave = this.sonarWaves[i];
