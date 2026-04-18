@@ -228,6 +228,20 @@ class GameScene extends Phaser.Scene {
         this.bird.body.allowGravity = false;
         this.physics.pause();
 
+        // Flip upside down and slide down
+        this.tweens.add({
+            targets: this.bird,
+            angle: 180,
+            duration: 400,
+            ease: 'Cubic.easeOut',
+        });
+        this.tweens.add({
+            targets: this.bird,
+            y: GAME_HEIGHT - GROUND_HEIGHT - this.bird.height / 2,
+            duration: 1500,
+            ease: 'Quad.easeIn',
+        });
+
         // Flash red
         this.cameras.main.flash(200, 255, 50, 50);
 
