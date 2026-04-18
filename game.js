@@ -1,11 +1,15 @@
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 450;
-const PIPE_GAP = 130;
-const PIPE_SPEED = -250;
-const PIPE_SPAWN_INTERVAL = 1500;
+const PIPE_GAP = 190;
+const PIPE_SPEED = -150;
+const PIPE_SPAWN_INTERVAL = 2500;
 const GRAVITY = 1200;
 const FLAP_VELOCITY = -380;
 const GROUND_HEIGHT = 80;
+const SONAR_INTERVAL = 3000;
+const SONAR_SPEED = 250;
+const SONAR_RING_WIDTH = 15;
+const SONAR_BIRD_RADIUS = 25;
 
 class BootScene extends Phaser.Scene {
     constructor() {
@@ -101,6 +105,18 @@ class GameScene extends Phaser.Scene {
             loop: true,
             paused: true,
         });
+
+        // --- Sonar wave darkness overlay ---
+        this.bird.setDepth(6);
+        this.ground1.setDepth(0);
+
+        this.sonarCanvas = this.textures.createCanvas('sonar_overlay_' + Date.now(), GAME_WIDTH, GAME_HEIGHT);
+        this.darkImage = this.add.image(0, 0, this.sonarCanvas.key).setOrigin(0, 0).setDepth(5);
+
+        this.sonarWaves = [];
+
+        // Emit an initial wave immediately
+        this.sonarWaves.push({ x: this.bird.x, y: this.bird.y, radius: 0 });
     }
 
     flap() {
@@ -118,6 +134,9 @@ class GameScene extends Phaser.Scene {
         }
 
         this.bird.setVelocityY(FLAP_VELOCITY);
+
+        // Emit sonar wave on each flap
+        this.sonarWaves.push({ x: this.bird.x, y: this.bird.y, radius: 0 });
     }
 
     spawnPipes() {
@@ -200,7 +219,54 @@ class GameScene extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(10);
     }
 
+    updateSonarOverlay() {
+        const delta = this.game.loop.delta / 1000;
+        const maxRadius = Math.sqrt(GAME_WIDTH * GAME_WIDTH + GAME_HEIGHT * GAME_HEIGHT);
+
+        const ctx = this.sonarCanvas.getContext();
+        ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+        // Fill with near-opaque black
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.97)';
+        ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+        // Switch to destination-out to cut transparent holes
+        ctx.globalCompositeOperation = 'destination-out';
+
+        // Always reveal area around the bird
+        ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+        ctx.beginPath();
+        ctx.arc(this.bird.x, this.bird.y, SONAR_BIRD_RADIUS, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Expand and draw sonar wave rings
+        for (let i = this.sonarWaves.length - 1; i >= 0; i--) {
+            const wave = this.sonarWaves[i];
+            wave.radius += SONAR_SPEED * delta;
+
+            if (wave.radius > maxRadius) {
+                this.sonarWaves.splice(i, 1);
+                continue;
+            }
+
+            const progress = wave.radius / maxRadius;
+            const alpha = Math.max(0, 1 - progress);
+
+            ctx.lineWidth = SONAR_RING_WIDTH;
+            ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+            ctx.beginPath();
+            ctx.arc(wave.x, wave.y, wave.radius, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+
+        ctx.globalCompositeOperation = 'source-over';
+        this.sonarCanvas.refresh();
+    }
+
     update() {
+        this.updateSonarOverlay();
+
         if (this.gameOver) return;
 
         // Scroll ground
