@@ -58,6 +58,7 @@ class GameScene extends Phaser.Scene {
         this.batFrames = ['bat_1', 'bat_2', 'bat_3', 'bat_4'];
         this.batAnimTimer = null;
         this.bird = this.physics.add.sprite(GAME_WIDTH * 0.15, GAME_HEIGHT / 2 - 40, 'bat_1');
+        this.bird.body.setSize(50, 50);
         this.bird.setGravityY(GRAVITY);
         this.bird.setCollideWorldBounds(true);
         this.bird.body.allowGravity = false; // no gravity until game starts
