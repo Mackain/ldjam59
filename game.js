@@ -305,6 +305,11 @@ class GameScene extends Phaser.Scene {
     update() {
         this.updateSonarOverlay();
 
+        // Space to flap (must be before gameOver check so restart works)
+        if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
+            this.flap();
+        }
+
         if (this.gameOver) return;
 
         // Scroll ground
@@ -312,11 +317,6 @@ class GameScene extends Phaser.Scene {
 
         // Scroll background slowly
         this.bg.tilePositionX += 0.5;
-
-        // Space to flap
-        if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
-            this.flap();
-        }
 
         // Rotate bird based on velocity
         if (this.started) {
