@@ -105,17 +105,19 @@ const ground = createPNG(336, 112, (x, y, w, h) => {
 });
 fs.writeFileSync(path.join(assetsDir, 'ground.png'), ground);
 
-// Background: 288x512 sky gradient
+// Background: 288x512 night sky
 const bg = createPNG(288, 512, (x, y, w, h) => {
     const t = y / h;
-    // Sky blue gradient
-    const r = Math.round(78 + t * 60);
-    const g = Math.round(192 + t * 30);
-    const b = Math.round(220 + t * 20);
-    // Simple clouds
-    const cloudY1 = 80, cloudY2 = 150;
-    if (Math.abs(y - cloudY1) < 20 && Math.sin(x * 0.05) > 0.3) return [255, 255, 255, 200];
-    if (Math.abs(y - cloudY2) < 15 && Math.cos(x * 0.04 + 1) > 0.2) return [255, 255, 255, 180];
+    // Dark night sky gradient
+    const r = Math.round(5 + t * 15);
+    const g = Math.round(5 + t * 15);
+    const b = Math.round(20 + t * 30);
+
+    // Stars - better hash for randomness, much fewer stars
+    const hash = ((x * 15731 + y * 789221 + x * y * 1376312589) & 0x7fffffff) / 0x7fffffff;
+    if (hash > 0.9992 && t < 0.7) return [255, 255, 255, Math.round(180 + hash * 75)];
+    if (hash > 0.9985 && t < 0.75) return [200, 210, 240, Math.round(120 + hash * 60)];
+
     return [r, g, Math.min(b, 255), 255];
 });
 fs.writeFileSync(path.join(assetsDir, 'bg.png'), bg);
