@@ -18,7 +18,10 @@ class BootScene extends Phaser.Scene {
 
     preload() {
         this.load.image('bg', 'assets/bg.png');
-        this.load.image('bird', 'assets/bird.png');
+        this.load.image('bat_1', 'assets/bat_1.png');
+        this.load.image('bat_2', 'assets/bat_2.png');
+        this.load.image('bat_3', 'assets/bat_3.png');
+        this.load.image('bat_4', 'assets/bat_4.png');
         this.load.image('pipe', 'assets/pipe.png');
         this.load.image('ground', 'assets/ground.png');
     }
@@ -51,8 +54,10 @@ class GameScene extends Phaser.Scene {
         // Pipes group
         this.pipes = this.physics.add.group();
 
-        // Bird
-        this.bird = this.physics.add.sprite(GAME_WIDTH * 0.15, GAME_HEIGHT / 2 - 40, 'bird');
+        // Bird (bat)
+        this.batFrames = ['bat_1', 'bat_2', 'bat_3', 'bat_4'];
+        this.batAnimTimer = null;
+        this.bird = this.physics.add.sprite(GAME_WIDTH * 0.15, GAME_HEIGHT / 2 - 40, 'bat_1');
         this.bird.setGravityY(GRAVITY);
         this.bird.setCollideWorldBounds(true);
         this.bird.body.allowGravity = false; // no gravity until game starts
@@ -135,8 +140,33 @@ class GameScene extends Phaser.Scene {
 
         this.bird.setVelocityY(FLAP_VELOCITY);
 
+        // Play bat flap animation
+        this.playBatFlap();
+
         // Emit sonar wave on each flap
         this.sonarWaves.push({ x: this.bird.x, y: this.bird.y, radius: 0 });
+    }
+
+    playBatFlap() {
+        if (this.batAnimTimer) {
+            this.batAnimTimer.remove();
+        }
+        let frameIndex = 0;
+        this.bird.setTexture(this.batFrames[frameIndex]);
+        this.batAnimTimer = this.time.addEvent({
+            delay: 60,
+            callback: () => {
+                frameIndex++;
+                if (frameIndex < this.batFrames.length) {
+                    this.bird.setTexture(this.batFrames[frameIndex]);
+                } else {
+                    this.bird.setTexture('bat_1');
+                    this.batAnimTimer.remove();
+                    this.batAnimTimer = null;
+                }
+            },
+            repeat: this.batFrames.length - 1,
+        });
     }
 
     spawnPipes() {
