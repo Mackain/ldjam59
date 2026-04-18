@@ -259,7 +259,7 @@ class GameScene extends Phaser.Scene {
 
         // Fill with near-opaque black
         ctx.globalCompositeOperation = 'source-over';
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.97)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 1)';
         ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
         // Switch to destination-out to cut transparent holes
