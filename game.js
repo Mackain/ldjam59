@@ -25,7 +25,9 @@ class BootScene extends Phaser.Scene {
         this.load.image('pipe', 'assets/pipe.png');
         this.load.image('ground', 'assets/ground.png');
         this.load.image('splash', 'assets/splash.png');
+        this.load.image('bat_dead', 'assets/bat_dead.png');
         this.load.audio('sonar', 'assets/Sound/Sonar Biatch.mp3');
+        this.load.audio('death', 'assets/Sound/Smashed Bat.mp3');
         this.load.audio('music_1', 'assets/Sound/music/Sewr Swing.mp3');
         this.load.audio('music_2', 'assets/Sound/music/Soul Searching in the Soil.mp3');
         this.load.audio('music_3', 'assets/Sound/music/Space Delivery Service.mp3');
@@ -235,12 +237,16 @@ class GameScene extends Phaser.Scene {
         this.gameOver = true;
         this.pipeTimer.paused = true;
 
-        this.bird.setVelocityY(0);
-        this.bird.setVelocityX(0);
-        this.bird.body.allowGravity = false;
-        this.physics.pause();
+        // Switch to dead sprite and play death sound
+        this.bird.setTexture('bat_dead');
+        this.sound.play('death');
 
-        // Flip upside down and slide down
+        // Stop physics for everything except the bird
+        this.pipes.setVelocityX(0);
+        this.bird.body.allowGravity = false;
+        this.bird.setCollideWorldBounds(false);
+
+        // Mario-style death: pop up then fall off screen
         this.tweens.add({
             targets: this.bird,
             angle: 180,
@@ -249,9 +255,17 @@ class GameScene extends Phaser.Scene {
         });
         this.tweens.add({
             targets: this.bird,
-            y: GAME_HEIGHT - GROUND_HEIGHT - this.bird.height / 2,
-            duration: 1500,
-            ease: 'Quad.easeIn',
+            y: this.bird.y - 80,
+            duration: 300,
+            ease: 'Cubic.easeOut',
+            onComplete: () => {
+                this.tweens.add({
+                    targets: this.bird,
+                    y: GAME_HEIGHT + 100,
+                    duration: 1000,
+                    ease: 'Quad.easeIn',
+                });
+            },
         });
 
         // Flash red
