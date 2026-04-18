@@ -25,6 +25,10 @@ class BootScene extends Phaser.Scene {
         this.load.image('pipe', 'assets/pipe.png');
         this.load.image('ground', 'assets/ground.png');
         this.load.image('splash', 'assets/splash.png');
+        this.load.audio('sonar', 'assets/Sound/Sonar Biatch.mp3');
+        this.load.audio('music_1', 'assets/Sound/music/Sewr Swing.mp3');
+        this.load.audio('music_2', 'assets/Sound/music/Soul Searching in the Soil.mp3');
+        this.load.audio('music_3', 'assets/Sound/music/Space Delivery Service.mp3');
     }
 
     create() {
@@ -61,6 +65,11 @@ class GameScene extends Phaser.Scene {
         this.score = 0;
         this.gameOver = false;
         this.started = false;
+
+        // Start background music (random track)
+        const musicKeys = ['music_1', 'music_2', 'music_3'];
+        this.sound.stopAll();
+        this.sound.play(Phaser.Utils.Array.GetRandom(musicKeys), { loop: true });
 
         // Background (tiled)
         this.bg = this.add.tileSprite(
@@ -147,6 +156,9 @@ class GameScene extends Phaser.Scene {
         }
 
         this.bird.setVelocityY(FLAP_VELOCITY);
+
+        // Play sonar sound
+        this.sound.play('sonar');
 
         // Play bat flap animation
         this.playBatFlap();
