@@ -24,9 +24,27 @@ class BootScene extends Phaser.Scene {
         this.load.image('bat_4', 'assets/bat_4.png');
         this.load.image('pipe', 'assets/pipe.png');
         this.load.image('ground', 'assets/ground.png');
+        this.load.image('splash', 'assets/splash.png');
     }
 
     create() {
+        this.scene.start('SplashScene');
+    }
+}
+
+class SplashScene extends Phaser.Scene {
+    constructor() {
+        super('SplashScene');
+    }
+
+    create() {
+        this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'splash').setOrigin(0.5);
+
+        this.input.on('pointerdown', () => this.startGame());
+        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).on('down', () => this.startGame());
+    }
+
+    startGame() {
         this.scene.start('GameScene');
     }
 }
@@ -85,16 +103,6 @@ class GameScene extends Phaser.Scene {
             strokeThickness: 4,
         }).setOrigin(0.5).setDepth(10);
 
-        // Instructions
-        this.instructions = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 20, 'Tap or Press Space\nto Start', {
-            fontSize: '20px',
-            fontFamily: 'Arial',
-            color: '#ffffff',
-            stroke: '#000000',
-            strokeThickness: 3,
-            align: 'center',
-        }).setOrigin(0.5).setDepth(10);
-
         // Input
         this.input.on('pointerdown', () => this.flap());
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
@@ -135,7 +143,6 @@ class GameScene extends Phaser.Scene {
             this.started = true;
             this.bird.body.allowGravity = true;
             this.pipeTimer.paused = false;
-            this.instructions.setVisible(false);
             this.spawnPipes();
         }
 
@@ -342,7 +349,7 @@ const config = {
             debug: false,
         },
     },
-    scene: [BootScene, GameScene],
+    scene: [BootScene, SplashScene, GameScene],
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
