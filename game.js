@@ -8,7 +8,7 @@ const FLAP_VELOCITY = -380;
 const GROUND_HEIGHT = 80;
 const SONAR_INTERVAL = 3000;
 const SONAR_SPEED = 250;
-const SONAR_RING_WIDTH = 15;
+const SONAR_RING_WIDTH = 5;
 const SONAR_BIRD_RADIUS = 25;
 
 class BootScene extends Phaser.Scene {
