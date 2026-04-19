@@ -324,9 +324,6 @@ class GameScene extends Phaser.Scene {
             },
         });
 
-        // Flash red
-        this.cameras.main.flash(200, 255, 50, 50);
-
         // Game over text
         this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 40, 'GAME OVER', {
             fontSize: '32px',
