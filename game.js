@@ -50,11 +50,21 @@ class SplashScene extends Phaser.Scene {
     }
 
     startGame() {
-        // Resume audio context for iOS Safari which requires user gesture to unlock
-        if (this.sound.context && this.sound.context.state === 'suspended') {
-            this.sound.context.resume();
+        // iOS categorizes Web Audio as "ambient" which respects the hardware
+        // mute switch. Playing a brief silent sound via an HTML5 Audio element
+        // during a user gesture promotes the session to "playback" mode,
+        // making Web Audio ignore the mute switch (matching native app behavior).
+        const silence = new Audio('data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYoRBqSAAAAAAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYoRBqSAAAAAAAAAAAAAAAAAAAA');
+        silence.play().catch(() => {});
+
+        const ctx = this.sound.context;
+        if (ctx && ctx.state === 'suspended') {
+            ctx.resume().then(() => {
+                this.scene.start('GameScene');
+            });
+        } else {
+            this.scene.start('GameScene');
         }
-        this.scene.start('GameScene');
     }
 }
 
