@@ -8,7 +8,6 @@ const FLAP_VELOCITY = -280;
 const GROUND_HEIGHT = 80;
 const SONAR_SPEED = 250;
 const SONAR_RING_WIDTH = 10;
-const SONAR_BIRD_RADIUS = 25;
 
 class BootScene extends Phaser.Scene {
     constructor() {
@@ -84,14 +83,13 @@ class GameScene extends Phaser.Scene {
         // Pipes group
         this.pipes = this.physics.add.group();
 
-        // Bird (bat)
-        this.batFrames = ['bat_1', 'bat_2', 'bat_3', 'bat_4'];
-        this.batAnimTimer = null;
-        this.bird = this.physics.add.sprite(GAME_WIDTH * 0.15, GAME_HEIGHT / 2 - 40, 'bat_1');
-        this.bird.body.setSize(50, 50);
-        this.bird.setGravityY(GRAVITY);
-        this.bird.setCollideWorldBounds(true);
-        this.bird.body.allowGravity = false; // no gravity until game starts
+        this.borjomiFrames = ['bat_1', 'bat_2', 'bat_3', 'bat_4'];
+        this.borjomiAnimTimer = null;
+        this.borjomi = this.physics.add.sprite(GAME_WIDTH * 0.15, GAME_HEIGHT / 2 - 40, 'bat_1');
+        this.borjomi.body.setSize(50, 50);
+        this.borjomi.setGravityY(GRAVITY);
+        this.borjomi.setCollideWorldBounds(true);
+        this.borjomi.body.allowGravity = false; // no gravity until game starts
 
         // Ground (tiled, scrolling)
         this.ground1 = this.add.tileSprite(
@@ -120,8 +118,8 @@ class GameScene extends Phaser.Scene {
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         // Collisions
-        this.physics.add.collider(this.bird, this.groundPhysics, () => this.hitObstacle());
-        this.physics.add.overlap(this.bird, this.pipes, () => this.hitObstacle());
+        this.physics.add.collider(this.borjomi, this.groundPhysics, () => this.hitObstacle());
+        this.physics.add.overlap(this.borjomi, this.pipes, () => this.hitObstacle());
 
         // Pipe timer (paused until start)
         this.pipeTimer = this.time.addEvent({
@@ -133,7 +131,7 @@ class GameScene extends Phaser.Scene {
         });
 
         // --- Sonar wave darkness overlay ---
-        this.bird.setDepth(6);
+        this.borjomi.setDepth(6);
         this.ground1.setDepth(0);
 
         this.sonarCanvas = this.textures.createCanvas('sonar_overlay_' + Date.now(), GAME_WIDTH, GAME_HEIGHT);
@@ -142,7 +140,7 @@ class GameScene extends Phaser.Scene {
         this.sonarWaves = [];
 
         // Emit an initial wave immediately
-        this.sonarWaves.push({ x: this.bird.x, y: this.bird.y, radius: 0 });
+        this.sonarWaves.push({ x: this.borjomi.x, y: this.borjomi.y, radius: 0 });
     }
 
     flap() {
@@ -155,12 +153,12 @@ class GameScene extends Phaser.Scene {
 
         if (!this.started) {
             this.started = true;
-            this.bird.body.allowGravity = true;
+            this.borjomi.body.allowGravity = true;
             this.pipeTimer.paused = false;
             this.spawnPipes();
         }
 
-        this.bird.setVelocityY(FLAP_VELOCITY);
+        this.borjomi.setVelocityY(FLAP_VELOCITY);
 
         // Play sonar sound
         this.sound.play('sonar');
@@ -169,28 +167,28 @@ class GameScene extends Phaser.Scene {
         this.playBatFlap();
 
         // Emit sonar wave on each flap
-        this.sonarWaves.push({ x: this.bird.x, y: this.bird.y, radius: 0 });
+        this.sonarWaves.push({ x: this.borjomi.x, y: this.borjomi.y, radius: 0 });
     }
 
     playBatFlap() {
-        if (this.batAnimTimer) {
-            this.batAnimTimer.remove();
+        if (this.borjomiAnimTimer) {
+            this.borjomiAnimTimer.remove();
         }
         let frameIndex = 0;
-        this.bird.setTexture(this.batFrames[frameIndex]);
-        this.batAnimTimer = this.time.addEvent({
+        this.borjomi.setTexture(this.borjomiFrames[frameIndex]);
+        this.borjomiAnimTimer = this.time.addEvent({
             delay: 60,
             callback: () => {
                 frameIndex++;
-                if (frameIndex < this.batFrames.length) {
-                    this.bird.setTexture(this.batFrames[frameIndex]);
+                if (frameIndex < this.borjomiFrames.length) {
+                    this.borjomi.setTexture(this.borjomiFrames[frameIndex]);
                 } else {
-                    this.bird.setTexture('bat_1');
-                    this.batAnimTimer.remove();
-                    this.batAnimTimer = null;
+                    this.borjomi.setTexture('bat_1');
+                    this.borjomiAnimTimer.remove();
+                    this.borjomiAnimTimer = null;
                 }
             },
-            repeat: this.batFrames.length - 1,
+            repeat: this.borjomiFrames.length - 1,
         });
     }
 
@@ -226,7 +224,7 @@ class GameScene extends Phaser.Scene {
         scoreZone.scored = false;
 
         // Check score overlap
-        this.physics.add.overlap(this.bird, scoreZone, (bird, zone) => {
+        this.physics.add.overlap(this.borjomi, scoreZone, (borjomi, zone) => {
             if (!zone.scored) {
                 zone.scored = true;
                 this.score++;
@@ -241,29 +239,29 @@ class GameScene extends Phaser.Scene {
         this.pipeTimer.paused = true;
 
         // Switch to dead sprite and play death sound
-        this.bird.setTexture('bat_dead');
+        this.borjomi.setTexture('bat_dead');
         this.sound.play('death');
 
-        // Stop physics for everything except the bird
+        // Stop physics for everything except the borjomi
         this.pipes.setVelocityX(0);
-        this.bird.body.allowGravity = false;
-        this.bird.setCollideWorldBounds(false);
+        this.borjomi.body.allowGravity = false;
+        this.borjomi.setCollideWorldBounds(false);
 
         // Mario-style death: pop up then fall off screen
         this.tweens.add({
-            targets: this.bird,
+            targets: this.borjomi,
             angle: 180,
             duration: 400,
             ease: 'Cubic.easeOut',
         });
         this.tweens.add({
-            targets: this.bird,
-            y: this.bird.y - 80,
+            targets: this.borjomi,
+            y: this.borjomi.y - 80,
             duration: 300,
             ease: 'Cubic.easeOut',
             onComplete: () => {
                 this.tweens.add({
-                    targets: this.bird,
+                    targets: this.borjomi,
                     y: GAME_HEIGHT + 100,
                     duration: 1000,
                     ease: 'Quad.easeIn',
@@ -358,13 +356,13 @@ class GameScene extends Phaser.Scene {
         // Scroll background slowly
         this.bg.tilePositionX += 0.5;
 
-        // Rotate bird based on velocity
+        // Rotate borjomi based on velocity
         if (this.started) {
-            const vy = this.bird.body.velocity.y;
+            const vy = this.borjomi.body.velocity.y;
             if (vy < 0) {
-                this.bird.angle = Math.max(-25, vy * 0.06);
+                this.borjomi.angle = Math.max(-25, vy * 0.06);
             } else {
-                this.bird.angle = Math.min(90, vy * 0.1);
+                this.borjomi.angle = Math.min(90, vy * 0.1);
             }
         }
 
