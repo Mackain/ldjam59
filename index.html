@@ -16,64 +16,15 @@
             height: 100vh;
         }
         #game-container {
-            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-        #fullscreen-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            z-index: 100;
-            background: rgba(0, 0, 0, 0.5);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 6px;
-            padding: 6px 12px;
-            font-size: 14px;
-            font-family: Arial, sans-serif;
-            cursor: pointer;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-        }
-        #fullscreen-btn:hover {
-            background: rgba(0, 0, 0, 0.7);
-        }
     </style>
 </head>
 <body>
-    <div id="game-container">
-        <button id="fullscreen-btn">Full Screen</button>
-    </div>
+    <div id="game-container"></div>
     <script src="phaser.min.js"></script>
     <script src="game.js"></script>
-    <script>
-        (function () {
-            var btn = document.getElementById('fullscreen-btn');
-            var container = document.getElementById('game-container');
-
-            function isFullscreen() {
-                return !!(document.fullscreenElement || document.webkitFullscreenElement);
-            }
-
-            function updateLabel() {
-                btn.textContent = isFullscreen() ? 'Exit Full Screen' : 'Full Screen';
-            }
-
-            btn.addEventListener('click', function (e) {
-                e.stopPropagation();
-                if (isFullscreen()) {
-                    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-                } else {
-                    var el = document.documentElement;
-                    (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
-                }
-            });
-
-            document.addEventListener('fullscreenchange', updateLabel);
-            document.addEventListener('webkitfullscreenchange', updateLabel);
-        })();
-    </script>
 </body>
 </html>
