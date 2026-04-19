@@ -60,12 +60,14 @@ class GameScene extends Phaser.Scene {
         super('GameScene');
         this.score = 0;
         this.gameOver = false;
+        this.canRestart = false;
         this.started = false;
     }
 
     create() {
         this.score = 0;
         this.gameOver = false;
+        this.canRestart = false;
         this.started = false;
 
         // Start background music (random track)
@@ -146,7 +148,9 @@ class GameScene extends Phaser.Scene {
 
     flap() {
         if (this.gameOver) {
-            this.scene.restart();
+            if (this.canRestart) {
+                this.scene.restart();
+            }
             return;
         }
 
@@ -264,6 +268,9 @@ class GameScene extends Phaser.Scene {
                     y: GAME_HEIGHT + 100,
                     duration: 1000,
                     ease: 'Quad.easeIn',
+                    onComplete: () => {
+                        this.canRestart = true;
+                    },
                 });
             },
         });
