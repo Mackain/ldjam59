@@ -24,6 +24,7 @@ class BootScene extends Phaser.Scene {
         this.load.image('ground', 'assets/ground.png');
         this.load.image('splash', 'assets/splash.png');
         this.load.image('bat_dead', 'assets/bat_dead.png');
+        this.load.image('bat_rip', 'assets/bat_rip.png');
         this.load.audio('sonar', 'assets/Sound/Sonar Biatch.mp3');
         this.load.audio('death', 'assets/Sound/Smashed Bat.mp3');
         this.load.audio('music_1', 'assets/Sound/music/Sewr Swing.mp3');
@@ -307,10 +308,13 @@ class GameScene extends Phaser.Scene {
             onComplete: () => {
                 this.tweens.add({
                     targets: this.borjomi,
-                    y: GAME_HEIGHT + 100,
+                    y: GAME_HEIGHT - GROUND_HEIGHT,
                     duration: 1000,
                     ease: 'Quad.easeIn',
                     onComplete: () => {
+                        this.borjomi.setVelocity(0);
+                        this.borjomi.setTexture('bat_rip');
+                        this.borjomi.angle = 0;
                         this.canRestart = true;
                     },
                 });
