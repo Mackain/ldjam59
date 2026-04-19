@@ -30,6 +30,7 @@ class BootScene extends Phaser.Scene {
         this.load.audio('music_1', 'assets/Sound/music/Sewr Swing.mp3');
         this.load.audio('music_2', 'assets/Sound/music/Soul Searching in the Soil.mp3');
         this.load.audio('music_3', 'assets/Sound/music/Space Delivery Service.mp3');
+        this.load.audio('gameover_music', 'assets/Sound/Flight License Revoked.mp3');
     }
 
     create() {
@@ -281,6 +282,7 @@ class GameScene extends Phaser.Scene {
 
     hitObstacle() {
         if (this.gameOver) return;
+        this.sound.stopAll();
         this.gameOver = true;
         this.pipeTimer.paused = true;
 
@@ -316,6 +318,7 @@ class GameScene extends Phaser.Scene {
                         this.borjomi.setTexture('bat_rip');
                         this.borjomi.angle = 0;
                         this.canRestart = true;
+                        this.sound.play('gameover_music', { loop: true });
                     },
                 });
             },
