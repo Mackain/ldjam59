@@ -4,11 +4,10 @@ const PIPE_GAP = 190;
 const PIPE_SPEED = -150;
 const PIPE_SPAWN_INTERVAL = 2500;
 const GRAVITY = 1200;
-const FLAP_VELOCITY = -380;
+const FLAP_VELOCITY = -280;
 const GROUND_HEIGHT = 80;
-const SONAR_INTERVAL = 3000;
 const SONAR_SPEED = 250;
-const SONAR_RING_WIDTH = 5;
+const SONAR_RING_WIDTH = 10;
 const SONAR_BIRD_RADIUS = 25;
 
 class BootScene extends Phaser.Scene {
