@@ -62,9 +62,6 @@ class SplashScene extends Phaser.Scene {
             }
         });
 
-        this.scale.on('enterfullscreen', () => { this.fsBtn.setText('[ Exit Full Screen ]'); });
-        this.scale.on('leavefullscreen', () => { this.fsBtn.setText('[ Full Screen ]'); });
-
         this.input.on('pointerdown', () => {
             if (!this.fsBtnTapped) this.startGame();
             this.fsBtnTapped = false;
