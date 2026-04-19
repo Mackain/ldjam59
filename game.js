@@ -44,7 +44,31 @@ class SplashScene extends Phaser.Scene {
     create() {
         this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'splash').setOrigin(0.5);
 
-        this.input.on('pointerdown', () => this.startGame());
+        // Fullscreen toggle button
+        this.fsBtn = this.add.text(GAME_WIDTH - 10, 10, '[ Full Screen ]', {
+            fontSize: '14px',
+            fontFamily: 'Arial',
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 3,
+        }).setOrigin(1, 0).setDepth(20).setInteractive({ useHandCursor: true });
+
+        this.fsBtn.on('pointerdown', (pointer) => {
+            this.fsBtnTapped = true;
+            if (this.scale.isFullscreen) {
+                this.scale.stopFullscreen();
+            } else {
+                this.scale.startFullscreen();
+            }
+        });
+
+        this.scale.on('enterfullscreen', () => { this.fsBtn.setText('[ Exit Full Screen ]'); });
+        this.scale.on('leavefullscreen', () => { this.fsBtn.setText('[ Full Screen ]'); });
+
+        this.input.on('pointerdown', () => {
+            if (!this.fsBtnTapped) this.startGame();
+            this.fsBtnTapped = false;
+        });
         this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE).on('down', () => this.startGame());
     }
 
@@ -114,7 +138,10 @@ class GameScene extends Phaser.Scene {
         }).setOrigin(0.5).setDepth(10);
 
         // Input
-        this.input.on('pointerdown', () => this.flap());
+        this.input.on('pointerdown', () => {
+            if (!this.fsBtnTapped) this.flap();
+            this.fsBtnTapped = false;
+        });
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         // Collisions
@@ -141,6 +168,27 @@ class GameScene extends Phaser.Scene {
 
         // Emit an initial wave immediately
         this.sonarWaves.push({ x: this.borjomi.x, y: this.borjomi.y, radius: 0 });
+
+        // Fullscreen toggle button
+        this.fsBtn = this.add.text(GAME_WIDTH - 10, 10, this.scale.isFullscreen ? '[ Exit Full Screen ]' : '[ Full Screen ]', {
+            fontSize: '14px',
+            fontFamily: 'Arial',
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 3,
+        }).setOrigin(1, 0).setDepth(20).setInteractive({ useHandCursor: true });
+
+        this.fsBtn.on('pointerdown', (pointer) => {
+            this.fsBtnTapped = true;
+            if (this.scale.isFullscreen) {
+                this.scale.stopFullscreen();
+            } else {
+                this.scale.startFullscreen();
+            }
+        });
+
+        this.scale.on('enterfullscreen', () => { this.fsBtn.setText('[ Exit Full Screen ]'); });
+        this.scale.on('leavefullscreen', () => { this.fsBtn.setText('[ Full Screen ]'); });
     }
 
     flap() {
