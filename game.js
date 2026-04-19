@@ -50,6 +50,10 @@ class SplashScene extends Phaser.Scene {
     }
 
     startGame() {
+        // Resume audio context for iOS Safari which requires user gesture to unlock
+        if (this.sound.context && this.sound.context.state === 'suspended') {
+            this.sound.context.resume();
+        }
         this.scene.start('GameScene');
     }
 }
