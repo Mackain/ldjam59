@@ -49,10 +49,6 @@ class SplashScene extends Phaser.Scene {
     }
 
     startGame() {
-        // Request fullscreen on mobile for maximum screen usage
-        if (!this.scale.isFullscreen && document.fullscreenEnabled) {
-            this.scale.startFullscreen();
-        }
         this.scene.start('GameScene');
     }
 }
@@ -395,8 +391,6 @@ const config = {
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        expandParent: true,
-        fullscreenTarget: 'game-container',
     },
 };
 
